@@ -152,6 +152,7 @@ function setupInputs() {
 
 function loadPlayer() {
     var loader = new THREE.FBXLoader();
+    // Usamos rutas sin el punto inicial para evitar confusiones en GitHub Pages
     loader.load('models/Sporty_Granny.fbx', function(object) {
         object.scale.setScalar(0.01); 
         object.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
@@ -161,23 +162,29 @@ function loadPlayer() {
         body.addShape(new CANNON.Box(new CANNON.Vec3(0.5, 0.9, 0.5)));
         body.position.set(0, 5, 0); 
         world.addBody(body);
+
         var mixer = new THREE.AnimationMixer(object);
         var actions = {};
-        var anims = ['Idle', 'jogging', 'Jumping', 'Falling_Idle', 'Hip_Hop_Dancing'];
+        // IMPORTANTE: Verifica que estos nombres de archivo en GitHub sean EXACTAMENTE así (minúsculas/mayúsculas)
+        var anims = ['Idle', 'Jogging', 'Jumping', 'Falling_Idle', 'Hip_Hop_Dancing'];
 
         anims.forEach(id => {
             loader.load('models/' + id + '.fbx', function(animData) {
                 var clip = animData.animations[0];
                 clip.tracks = clip.tracks.filter(t => !t.name.endsWith('.position') || t.name.indexOf('Hips') === -1);
                 var action = mixer.clipAction(clip);
-                if (id === 'jogging') action.timeScale = 1.5;
+                if (id === 'Jogging') action.timeScale = 1.5;
                 if (id === 'Jumping') { action.setLoop(THREE.LoopOnce); action.clampWhenFinished = true; }
                 actions[id.toLowerCase()] = action;
                 if (id === 'Idle') action.play();
+            }, undefined, function(err) {
+                console.error("Error cargando animación " + id + ":", err);
             });
         });
 
         player = { mesh: object, body: body, mixer: mixer, actions: actions, currentActionId: 'idle', aabb: new THREE.Box3() };
+    }, undefined, function(err) {
+        console.error("Error cargando modelo principal Granny:", err);
     });
 }
 
@@ -343,6 +350,10 @@ var vImpulse = new CANNON.Vec3(); // Reutilizamos para el salto
 
 function update() {
     if (juegoFinalizado) return;
+    if (!player || !player.mesh) {
+        renderer.render(scene, camera);
+        return; 
+    }
     frameCount++;
     
     // --- OPTIMIZACIÓN 1: PASO FÍSICO ESTRICTAMENTE FIJO ---
@@ -411,7 +422,7 @@ function update() {
         if (!isGrounded) {
             nextId = (player.body.velocity.y > 0.5) ? 'jumping' : 'falling_idle';
         } else if (TempMove.lengthSq() > 0) {
-            nextId = 'jogging';
+            nextId = 'Jogging';
         } else if (keys.p) {
             nextId = 'hip_hop_dancing';
         }
