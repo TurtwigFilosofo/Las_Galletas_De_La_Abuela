@@ -152,7 +152,6 @@ function setupInputs() {
 
 function loadPlayer() {
     var loader = new THREE.FBXLoader();
-    // Usamos rutas sin el punto inicial para evitar confusiones en GitHub Pages
     loader.load('models/Sporty_Granny.fbx', function(object) {
         object.scale.setScalar(0.01); 
         object.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
@@ -165,7 +164,8 @@ function loadPlayer() {
 
         var mixer = new THREE.AnimationMixer(object);
         var actions = {};
-        // IMPORTANTE: Verifica que estos nombres de archivo en GitHub sean EXACTAMENTE así (minúsculas/mayúsculas)
+        
+        // CORRECCIÓN: Nombres con mayúsculas según tus archivos en el servidor
         var anims = ['Idle', 'Jogging', 'Jumping', 'Falling_Idle', 'Hip_Hop_Dancing'];
 
         anims.forEach(id => {
@@ -173,9 +173,14 @@ function loadPlayer() {
                 var clip = animData.animations[0];
                 clip.tracks = clip.tracks.filter(t => !t.name.endsWith('.position') || t.name.indexOf('Hips') === -1);
                 var action = mixer.clipAction(clip);
+                
+                // CORRECCIÓN: Comparación sensible a mayúsculas
                 if (id === 'Jogging') action.timeScale = 1.5;
                 if (id === 'Jumping') { action.setLoop(THREE.LoopOnce); action.clampWhenFinished = true; }
+                
+                // Guardamos en el objeto actions usando minúsculas para facilitar el acceso en el update
                 actions[id.toLowerCase()] = action;
+                
                 if (id === 'Idle') action.play();
             }, undefined, function(err) {
                 console.error("Error cargando animación " + id + ":", err);
@@ -422,7 +427,8 @@ function update() {
         if (!isGrounded) {
             nextId = (player.body.velocity.y > 0.5) ? 'jumping' : 'falling_idle';
         } else if (TempMove.lengthSq() > 0) {
-            nextId = 'Jogging';
+            // Se usa 'jogging' porque en loadPlayer guardamos como id.toLowerCase()
+            nextId = 'jogging'; 
         } else if (keys.p) {
             nextId = 'hip_hop_dancing';
         }
