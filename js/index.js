@@ -7,7 +7,7 @@ var stats = {
 };
 
 var cookieJars = []; // Array para animar los tarros activos
-
+var statsFPS;
 var pantallaCargaOculta = false;
 var juegoFinalizado = false;
 
@@ -101,6 +101,18 @@ function init() {
     document.getElementById('container').appendChild(renderer.domElement);
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    statsFPS = new Stats();
+    statsFPS.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    
+    // Estilo para colocarlo abajo a la derecha
+    statsFPS.dom.style.position = 'absolute';
+    statsFPS.dom.style.top = 'auto';
+    statsFPS.dom.style.bottom = '0px';
+    statsFPS.dom.style.left = 'auto';
+    statsFPS.dom.style.right = '0px';
+    
+    document.body.appendChild(statsFPS.dom);
 }
 
 function createPhysicsWorld() {
@@ -485,9 +497,11 @@ function update() {
 }
 
 function render() {
+    statsFPS.begin();
     requestAnimationFrame(render);
     update();
     renderer.render(scene, camera);
+    statsFPS.end();
 }
 
 function actualizarUI() {
