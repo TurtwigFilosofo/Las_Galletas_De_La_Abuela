@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Granny - Escuela</title>
+    <style>
+        body { 
+            background-color: #000; 
+            margin: 0px; 
+            overflow: hidden; 
+            font-family: sans-serif;
+        }
+        #container { 
+            width: 100%; 
+            height: 100vh; 
+        }
+
+        /* --- CONTROLES MOVIDOS A LA DERECHA SUPERIOR --- */
+        #instructions {
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Cambiado de left a right */
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            pointer-events: none;
+            text-align: right; /* Alineamos el texto a la derecha */
+            z-index: 10; /* Aseguramos que esté por encima */
+        }
+
+        /* --- MARCADOR SE QUEDA EN LA IZQUIERDA SUPERIOR --- */
+        #marcador {
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            color: white; 
+            background: rgba(0,0,0,0.5); 
+            padding: 10px; 
+            border-radius: 5px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-carga" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black url('textures/Titulo.png') no-repeat center center;
+    background-size: cover;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    transition: opacity 1s ease;
+">
+</div>
+    <div id="instructions">
+        <strong>Controles:</strong><br>
+        WASD: Moverse<br>
+        FLECHAS: Rotar Cámara<br> ESPACIO: Saltar<br>
+        ENTER: Reset Cámara
+    </div>
+
+    <div id="marcador">
+        Totales: <span id="t">0</span> | Recogidos: <span id="r">0</span> | Faltan: <span id="f">0</span>
+    </div>
+    
+    <div id="pantalla-final" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        opacity: 0;
+        display: none;
+        z-index: 10000;
+        transition: opacity 2s ease;
+        justify-content: center;
+        align-items: center;
+    ">
+        <div id="imagen-final" style="
+            width: 100%;
+            height: 100%;
+            background: url('textures/Final.png') no-repeat center center;
+            background-size: cover;
+        "></div>
+    </div>
+    <div id="container"></div>
+
+    <script src="lib/three.min_r140.js"></script>
+    <script src="https://unpkg.com/fflate"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r140/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r140/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="lib/cannon_062.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="js/test.js"></script>
+
+</body>
+</html>
