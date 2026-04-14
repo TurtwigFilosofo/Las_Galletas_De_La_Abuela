@@ -170,7 +170,7 @@ function loadPlayer() {
         scene.add(object);
 
         var body = new CANNON.Body({ mass: 1, fixedRotation: true, allowSleep: false });
-        body.addShape(new CANNON.Box(new CANNON.Vec3(0.5, 0.9, 0.5)));
+        body.addShape(new CANNON.Box(new CANNON.Vec3(0.5, 0.8, 0.5)));
         body.position.set(0, 5, 0); 
         world.addBody(body);
 
