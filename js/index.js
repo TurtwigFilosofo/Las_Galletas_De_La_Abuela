@@ -1,10 +1,4 @@
-/**
- * test.js - Proyecto Final Consolidado
- * - Movimiento relativo a cámara
- * - Detección de suelo por AABB
- * - Salto por Impulso (Física Cannon.js)
- * - Cámara orbital con flechas y reset (Enter)
- */
+
 
 var stats = {
     totales: 0,
