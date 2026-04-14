@@ -51,7 +51,6 @@ var pantallaCargaOculta = false;
 // Al pasar el tiempo definido, permitimos que aparezca el mensaje
 setTimeout(() => {
     puedeQuitarCarga = true;
-    const mensaje = document.getElementById('mensaje-enter');
     if (mensaje) mensaje.style.display = 'block';
 }, tiempoEsperaCarga);
 
@@ -359,15 +358,10 @@ function update() {
         renderer.render(scene, camera);
         return; 
     }
-    frameCount++;
+    var deltaTime = reloj.getDelta();
+    world.step(1/60, deltaTime, 3);
     
-    // --- OPTIMIZACIÓN 1: PASO FÍSICO ESTRICTAMENTE FIJO ---
-    if (frameCount % 2 === 0) {
-        world.step(1/30); // Paso más largo pero menos frecuente
-    } 
-
-    // Guardamos el delta real SOLO para que las animaciones visuales sean fluidas
-    var deltaAnim = reloj.getDelta();
+    frameCount++;
 
     if (player && player.mixer) {
         // 1. CONTROL DE CÁMARA
@@ -446,9 +440,9 @@ function update() {
         player.mesh.position.y -= 0.9; 
         
         // Usamos el delta real para que la animación no de tirones
-        if (deltaAnim > 0) {
-            player.mixer.update(deltaAnim); 
-        }
+        if (deltaTime > 0) {
+        player.mixer.update(deltaTime); 
+    }
 
         // 5. CÁMARA ORBITAL
         var dist = 12, altura = 6;
