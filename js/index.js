@@ -68,6 +68,7 @@ function quitarPantallaCarga() {
         setTimeout(() => {
             pantalla.style.display = 'none'; // Eliminamos totalmente
             pantallaCargaOculta = true;
+            keys.enter = false;
         }, 1000); // Espera a que termine la transición de CSS
     }
 }
@@ -134,25 +135,26 @@ function setupInputs() {
     window.addEventListener('keydown', (e) => { 
         const key = e.key.toLowerCase();
         
-        // Bloqueo total si la pantalla de carga sigue activa
+        // --- CASO 1: PANTALLA DE CARGA ACTIVA ---
         if (!pantallaCargaOculta) {
-            // Si pulsa Enter y ya pasaron los 3 segundos, iniciamos el juego
             if (key === "enter" && puedeQuitarCarga) {
                 quitarPantallaCarga();
+                // Bloqueamos la propagación para que el juego no reciba este Enter
+                e.preventDefault();
+                return; 
             }
-            return; // No procesamos nada más
-        }
-
-        // --- Lógica normal de juego (Solo se lee tras el Enter inicial) ---
-        if (key === " ") { keys.space = true; e.preventDefault(); }
-        
-        // Evitamos que el Enter resetee la cámara en la misma pulsación de inicio
-        if (key === "enter") {
-            e.preventDefault(); 
             return; 
         }
 
-        if (keys.hasOwnProperty(key)) keys[key] = true;
+        // --- CASO 2: JUEGO EN MARCHA ---
+        if (key === " ") { keys.space = true; e.preventDefault(); }
+        
+        // Guardamos el estado de las teclas en el objeto global
+        if (keys.hasOwnProperty(key)) {
+            keys[key] = true;
+            // Si es enter, prevenimos comportamiento por defecto (scroll)
+            if (key === "enter") e.preventDefault();
+        }
     });
 
     window.addEventListener('keyup', (e) => { 
@@ -160,7 +162,6 @@ function setupInputs() {
         if (keys.hasOwnProperty(key)) keys[key] = false;
     });
 }
-
 function loadPlayer() {
     var loader = new THREE.FBXLoader();
     loader.load('models/Sporty_Granny.fbx', function(object) {
@@ -379,7 +380,10 @@ function update() {
         // 1. CONTROL DE CÁMARA
         if (keys.arrowleft) cameraAngle -= CONFIG.cameraRotationSpeed;
         if (keys.arrowright) cameraAngle += CONFIG.cameraRotationSpeed;
-        if (keys.enter) cameraAngle = player.mesh.rotation.y + Math.PI;
+        if (keys.enter && pantallaCargaOculta) {
+            cameraAngle = player.mesh.rotation.y + Math.PI;
+            keys.enter = false; 
+        }
 
         // 2. SUELO (AABB)
         var isGrounded = checkGroundedAABB();
