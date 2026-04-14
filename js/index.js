@@ -423,16 +423,18 @@ function update() {
         }
 
         // 4. ANIMACIONES
+        // Dentro de la función update()
         var nextId = 'idle';
+
         if (!isGrounded) {
             nextId = (player.body.velocity.y > 0.5) ? 'jumping' : 'falling_idle';
-        } else if (TempMove.lengthSq() > 0) {
-            // Se usa 'jogging' porque en loadPlayer guardamos como id.toLowerCase()
-            nextId = 'jogging'; 
+        } else if (TempMove.lengthSq() > 0.01) { // Añadimos un pequeño margen
+            nextId = 'jogging'; // DEBE ser minúscula si usaste id.toLowerCase() al cargar
         } else if (keys.p) {
             nextId = 'hip_hop_dancing';
         }
 
+        // Cambiar la animación si es necesario
         if (player.currentActionId !== nextId && player.actions[nextId]) {
             player.actions[player.currentActionId].fadeOut(0.2);
             player.actions[nextId].reset().fadeIn(0.2).play();
